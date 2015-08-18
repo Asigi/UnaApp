@@ -1,12 +1,15 @@
 package com.arshsingh93.unaapp;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,17 +21,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.facebook.FacebookActivity;
+import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.login.widget.LoginButton;
 import com.parse.GetDataCallback;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
@@ -40,9 +53,13 @@ public class SettingsActivity extends AppCompatActivity {
     public static final int TAKE_PHOTO_REQUEST = 0;
     public static final int CHOOSE_PHOTO_REQUEST = 1;
     public static final int MEDIA_TYPE_IMAGE = 4;
+    private Dialog progressDialog;
 
-    @Bind(R.id.settingsPhoto) ImageView myPhoto;
-    @Bind(R.id.settingsUsername) TextView myUsername;
+    @Bind(R.id.settingsPhoto)
+    ImageView myPhoto;
+    @Bind(R.id.settingsUsername)
+    TextView myUsername;
+    private LoginButton face;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +68,9 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        face.findViewById(R.id.login_button);
+        face.setVisibility(View.INVISIBLE);
         myUsername.setText(ParseUser.getCurrentUser().getUsername());
 
 
@@ -69,9 +89,31 @@ public class SettingsActivity extends AppCompatActivity {
 
             });
         }
+        face.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressDialog = ProgressDialog.show(SettingsActivity.this, "", "Getting image...", true);
+                List<String> permissions = Arrays.asList("public_profile", "Picture");
+                ParseFacebookUtils.logInWithReadPermissionsInBackground(SettingsActivity.this, permissions, new LogInCallback() {
+                    @Override
+                    public void done(ParseUser user, ParseException err) {
+                        progressDialog.dismiss();
+                        if (err == null) {
+                            //         Log.d(TAG, "user logged in");
+                            Profile profile = Profile.getCurrentProfile();
+                            String userId = profile.getId();
+                            String profileImgUrl = "https://graph.facebook.com/" + userId + "/picture?type=large";
+                            Glide.with(SettingsActivity.this)
+                                    .load(profileImgUrl)
+                                    .into(myPhoto);
+                        }
+                    }
+                });
+            }
+        });
     }
 
-    @OnClick (R.id.settingsPhoto)
+    @OnClick(R.id.settingsPhoto)
     public void choosePhoto(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
         builder.setItems(R.array.camera_choices, mDialogInterface);
@@ -87,9 +129,9 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
     /**
      * Set the profile image of this account
+     *
      * @param theUri the uri for the photo
      */
     private void setImage(Uri theUri) {
@@ -115,12 +157,16 @@ public class SettingsActivity extends AppCompatActivity {
             Log.e("ProfileFragment", "Error: " + e);
         }
     }
-
+    //TODO
+    /**
+     *
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("ProfileFragment", "Here in onActivityResult with requestCode: " + requestCode + " , resultCode: " +
-                resultCode  + " , data: " + data);
+                resultCode + " , data: " + data);
         super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == this.RESULT_OK) {
             if (requestCode == CHOOSE_PHOTO_REQUEST) {
@@ -143,10 +189,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         }
     }
-
-
-
-
     protected Uri mMediaUri;
     protected DialogInterface.OnClickListener mDialogInterface = new DialogInterface.OnClickListener() {
         @Override
@@ -168,8 +210,13 @@ public class SettingsActivity extends AppCompatActivity {
                     choosePhotoIntent.setType("image/*");
                     startActivityForResult(choosePhotoIntent, CHOOSE_PHOTO_REQUEST);
                     break;
+                //TODO
+                case 2:
+                    face.setVisibility(View.VISIBLE);
+                    break;
             }
         }
+
         private Uri getOutputMediaFileUri(int theMediaType) {
             if (isExternalStorageAvailable()) {
                 //get the Uri
@@ -204,6 +251,7 @@ public class SettingsActivity extends AppCompatActivity {
                 return null;
             }
         }
+
         private boolean isExternalStorageAvailable() {
             String state = Environment.getExternalStorageState();
             if (state.equals(Environment.MEDIA_MOUNTED)) {

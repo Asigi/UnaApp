@@ -19,13 +19,13 @@ import butterknife.OnClick;
 
 public class CreateGroupActivity extends AppCompatActivity {
 
-    @Bind(R.id.createGroupNameText) TextView myName;
+    @Bind(R.id.edtGroupNameText) TextView myName;
     @Bind(R.id.createGroupOneText) TextView myOneWord;
-    @Bind(R.id.createGroupPrivateButton) RadioButton myPrivateButton;
+    @Bind(R.id.editGroupPrivateButton) RadioButton myPrivateButton;
     @Bind(R.id.createGroupLengthyText) TextView myDescription;
-    @Bind(R.id.createGroupBlogCheck) CheckBox myBlogCheck;
+    @Bind(R.id.editGroupBlogCheck) CheckBox myBlogCheck;
     @Bind(R.id.createGroupCalendarCheck) CheckBox myCalendarCheck;
-    @Bind(R.id.createGroupButton) Button myCreateButton;
+    @Bind(R.id.EditGroupButton) Button myCreateButton;
 
 
     @Override
@@ -39,7 +39,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
 
-    @OnClick(R.id.createGroupButton)
+    @OnClick(R.id.EditGroupButton)
     public void createGroup() {
         final ParseObject groupObject = new ParseObject("Group");
 

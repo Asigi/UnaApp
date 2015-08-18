@@ -18,7 +18,9 @@
     <string-array name="camera_choices">
         <item>Take Picture</item>
         <item>Choose Picture from Gallery</item>
+        <item>Use Facebook Profile Picture</item>
     </string-array>
     <string name="title_activity_create_group">createGroup</string>
+    <string name="title_activity_edit_group_activities">EditGroupActivities</string>
 
 </resources>

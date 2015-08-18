@@ -3,19 +3,28 @@ package com.arshsingh93.unaapp;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 import com.parse.SignUpCallback;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 public class EnterActivity extends AppCompatActivity {
@@ -39,6 +48,7 @@ public class EnterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setTheme(R.style.RedTheme);
         setContentView(R.layout.activity_enter);
 
@@ -105,6 +115,7 @@ public class EnterActivity extends AppCompatActivity {
                 changeType(currentType);
             }
         });
+        printKeyHash();
     }
             public void logIn(int type) {
                 String username = myUsername.getText().toString();
@@ -290,6 +301,23 @@ public class EnterActivity extends AppCompatActivity {
             myProgressBar.setVisibility(View.VISIBLE);
         } else {
             myProgressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+    /**
+     * Call this method inside onCreate once to get hash key
+     */
+    public void printKeyHash() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("arshsingh93.una", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.e("SHA: ", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
     }
 }

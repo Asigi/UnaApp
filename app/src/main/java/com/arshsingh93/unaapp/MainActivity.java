@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
 
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setTheme(R.style.RedTheme);
         setContentView(R.layout.activity_main);
 
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             navigateToEnter();
         } else if (id == R.id.action_new) {
             Toast.makeText(this, "clicked New", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, CreateGroupActivity.class);
+            Intent intent = new Intent(this, EditGroupActivity.class);
             startActivity(intent);
         } else if (id == R.id.action_inbox) {
             Toast.makeText(this, "clicked inbox", Toast.LENGTH_SHORT).show();

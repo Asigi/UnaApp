@@ -1,5 +1,7 @@
 package com.arshsingh93.unaapp;
 
+import com.parse.ParseObject;
+
 /**
  * Created by Student on 8/17/2015.
  */
@@ -14,7 +16,27 @@ public class TheGroupUtil {
     public static String GROUP_BLOG_EXIST = "Blogs Available";
     public static String GROUP_CALENDAR_EXIST = "Calendar Available";
     public static String GROUP_SIZE = "Group size";
+    public static String GROUP_PHOTO = "GroupPhoto";
 
     public static String GROUP_PUBLIC = "public";
     public static String GROUP_PRIVATE = "private";
+
+    /**
+     *
+     */
+    private static ParseObject currentGroup;
+
+    /**
+     *
+     */
+    public static void setCurrentGroup(ParseObject theGroup){
+        currentGroup = theGroup;
+    }
+    /**
+     *
+     */
+    public static ParseObject getCurrentGroup(){
+        return currentGroup;
+    }
+
 }

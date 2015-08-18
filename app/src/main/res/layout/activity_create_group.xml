@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.arshsingh93.unaapp.CreateGroupActivity"
+    tools:context="com.arshsingh93.unaapp.EditGroupActivity"
     android:background="#ffffff">
 
     <TextView
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Create a group by filling out \n the following information"
-        android:id="@+id/createGroupTopText"
+        android:id="@+id/editGroupTopText"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
@@ -24,9 +24,9 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/createGroupNameText"
+        android:id="@+id/edtGroupNameText"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/createGroupTopText"
+        android:layout_below="@+id/editGroupTopText"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:maxLines="2" />
@@ -37,15 +37,15 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Group Name: "
         android:id="@+id/textView"
-        android:layout_alignTop="@+id/createGroupNameText"
-        android:layout_toLeftOf="@+id/createGroupNameText"
-        android:layout_toStartOf="@+id/createGroupNameText" />
+        android:layout_alignTop="@+id/edtGroupNameText"
+        android:layout_toLeftOf="@+id/edtGroupNameText"
+        android:layout_toStartOf="@+id/edtGroupNameText" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Create Group"
-        android:id="@+id/createGroupButton"
+        android:id="@+id/EditGroupButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:textColor="#ffffff" />
@@ -54,10 +54,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Make this group private"
-        android:id="@+id/createGroupPrivateButton"
+        android:id="@+id/editGroupPrivateButton"
         android:checked="false"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/createGroupNameText"
+        android:layout_below="@+id/edtGroupNameText"
 
         android:layout_centerHorizontal="true"
         android:buttonTint="@android:color/holo_red_dark" />
@@ -68,7 +68,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Note: Groups that are set to &apos;private&apos; can not be found (or seen) in the search bar by non-members"
         android:id="@+id/textView2"
-        android:layout_below="@+id/createGroupPrivateButton"
+        android:layout_below="@+id/editGroupPrivateButton"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:gravity="center" />
@@ -115,12 +115,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Blogs"
-        android:id="@+id/createGroupBlogCheck"
+        android:id="@+id/editGroupBlogCheck"
         android:layout_marginTop="30dp"
         android:checked="true"
         android:layout_below="@+id/linearLayout"
-        android:layout_toLeftOf="@+id/createGroupNameText"
-        android:layout_toStartOf="@+id/createGroupNameText"
+        android:layout_toLeftOf="@+id/edtGroupNameText"
+        android:layout_toStartOf="@+id/edtGroupNameText"
         android:buttonTint="@android:color/holo_red_dark" />
 
     <CheckBox
@@ -129,18 +129,18 @@
         android:text="Calendar"
         android:id="@+id/createGroupCalendarCheck"
         android:checked="true"
-        android:layout_alignTop="@+id/createGroupBlogCheck"
-        android:layout_alignRight="@+id/createGroupPrivateButton"
-        android:layout_alignEnd="@+id/createGroupPrivateButton"
+        android:layout_alignTop="@+id/editGroupBlogCheck"
+        android:layout_alignRight="@+id/editGroupPrivateButton"
+        android:layout_alignEnd="@+id/editGroupPrivateButton"
         android:buttonTint="@android:color/holo_red_dark" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/scrollView"
-        android:layout_below="@+id/createGroupBlogCheck"
+        android:layout_below="@+id/editGroupBlogCheck"
         android:layout_marginTop="10dp"
-        android:layout_above="@+id/createGroupButton"
+        android:layout_above="@+id/EditGroupButton"
         android:layout_centerHorizontal="true" >
 
         <EditText

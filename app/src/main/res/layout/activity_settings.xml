@@ -13,7 +13,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:weightSum="2">
+        android:weightSum="2"
+        android:id="@+id/linearLayout2">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -55,6 +56,17 @@
                 android:layout_alignParentLeft="false"
                 android:layout_alignWithParentIfMissing="false"
                 android:layout_centerVertical="true" />
+            <!--com.facebook.login.widget.LoginButton-->
         </RelativeLayout>
     </LinearLayout>
+
+    <!--<com.facebook.login.widget.LoginButton-->
+        <!--android:id="@+id/login_button"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/linearLayout2"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_marginLeft="42dp"-->
+        <!--android:layout_marginStart="42dp" />-->
 </RelativeLayout>
