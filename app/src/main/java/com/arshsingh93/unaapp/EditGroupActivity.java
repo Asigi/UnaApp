@@ -2,35 +2,29 @@ package com.arshsingh93.unaapp;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.facebook.FacebookActivity;
-import com.facebook.FacebookSdk;
-import com.facebook.Profile;
-import com.facebook.login.widget.LoginButton;
 import com.parse.GetDataCallback;
-import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -39,43 +33,50 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SettingsActivity extends AppCompatActivity {
-
+public class EditGroupActivity extends AppCompatActivity {
     public static final int TAKE_PHOTO_REQUEST = 0;
     public static final int CHOOSE_PHOTO_REQUEST = 1;
     public static final int MEDIA_TYPE_IMAGE = 4;
     private Dialog progressDialog;
 
-    @Bind(R.id.settingsPhoto)
-    ImageView myPhoto;
-    @Bind(R.id.settingsUsername)
-    TextView myUsername;
-    private LoginButton face;
-
+    @Bind(R.id.edtGroupNameText) TextView myName;
+    @Bind(R.id.editGroupOneText) TextView myOneWord;
+    @Bind(R.id.editGroupPrivateButton) RadioButton myPrivateCheck;
+    @Bind(R.id.editGroupLengthyText) TextView myDescription;
+    @Bind(R.id.editGroupBlogCheck) CheckBox myBlogCheck;
+    @Bind(R.id.editGroupCalendarCheck) CheckBox myCalendarCheck;
+    @Bind(R.id.editGroupPhoto) ImageView myPhoto;
+    @Bind(R.id.EditGroupButton) Button mySaveButton;
+    @Bind(R.id.EditGroupMemberbutton) Button myEditMembersButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.RedTheme);
-        setContentView(R.layout.activity_settings);
+        getSupportActionBar().hide();
+        setContentView(R.layout.activity_create_group);
         ButterKnife.bind(this);
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
-//        face.findViewById(R.id.login_button);
-//        face.setVisibility(View.INVISIBLE);
-        myUsername.setText(ParseUser.getCurrentUser().getUsername());
 
+        mySaveButton.setBackgroundColor(TheColorUtil.getDarkProperColor());
+        myEditMembersButton.setBackgroundColor(TheColorUtil.getDarkProperColor());
+        myName.setText(TheGroupUtil.getCurrentGroup().getString(TheGroupUtil.GROUP_NAME));
+        myOneWord.setText(TheGroupUtil.getCurrentGroup().getString(TheGroupUtil.GROUP_ONE_WORD));
+        myDescription.setText(TheGroupUtil.getCurrentGroup().getString(TheGroupUtil.GROUP_LENGTHY_DESCRIPTION));
+        if(TheGroupUtil.getCurrentGroup().getString(TheGroupUtil.GROUP_TYPE).equals(TheGroupUtil.GROUP_PRIVATE))
+            myPrivateCheck.isChecked();
+        if(TheGroupUtil.getCurrentGroup().getBoolean(TheGroupUtil.GROUP_BLOG_EXIST) == true)
+            myBlogCheck.isChecked();
+        if(TheGroupUtil.getCurrentGroup().getBoolean(TheGroupUtil.GROUP_CALENDAR_EXIST) == true)
+            myCalendarCheck.isChecked();
 
-        if (ParseUser.getCurrentUser().get("profilePic") != null) {
-            ParseFile picFile = (ParseFile) ParseUser.getCurrentUser().get("profilePic");
+        if (TheGroupUtil.getCurrentGroup().get(TheGroupUtil.GROUP_PHOTO) != null) {
+            ParseFile picFile = (ParseFile) TheGroupUtil.getCurrentGroup().get(TheGroupUtil.GROUP_PHOTO);
             picFile.getDataInBackground(new GetDataCallback() {
                 @Override
                 public void done(byte[] bytes, ParseException e) {
@@ -89,51 +90,94 @@ public class SettingsActivity extends AppCompatActivity {
 
             });
         }
-        face.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressDialog = ProgressDialog.show(SettingsActivity.this, "", "Getting image...", true);
-                List<String> permissions = Arrays.asList("public_profile", "Picture");
-                ParseFacebookUtils.logInWithReadPermissionsInBackground(SettingsActivity.this, permissions, new LogInCallback() {
+    }
+
+
+    @OnClick(R.id.EditGroupButton)
+    public void editGroup() {
+        final ParseObject groupObject = new ParseObject("Group");
+
+        if (editValid()) {
+            groupObject.put(TheGroupUtil.GROUP_NAME, myName.getText().toString());
+            groupObject.put(TheGroupUtil.GROUP_TYPE, getGroupType());
+            groupObject.put(TheGroupUtil.GROUP_FOUNDER, ParseUser.getCurrentUser());
+            groupObject.put(TheGroupUtil.GROUP_ONE_WORD, myOneWord.getText().toString());
+            groupObject.put(TheGroupUtil.GROUP_LENGTHY_DESCRIPTION, myDescription.getText().toString());
+            groupObject.put(TheGroupUtil.GROUP_BLOG_EXIST, getBlogCheck());
+            groupObject.put(TheGroupUtil.GROUP_CALENDAR_EXIST, getCalendarCheck());
+
+            if (TheNetUtil.isNetworkAvailable(this)) {
+                groupObject.saveInBackground(new SaveCallback() {
                     @Override
-                    public void done(ParseUser user, ParseException err) {
-                        progressDialog.dismiss();
-                        if (err == null) {
-                            //         Log.d(TAG, "user logged in");
-                            Profile profile = Profile.getCurrentProfile();
-                            String userId = profile.getId();
-                            String profileImgUrl = "https://graph.facebook.com/" + userId + "/picture?type=large";
-                            Glide.with(SettingsActivity.this)
-                                    .load(profileImgUrl)
-                                    .into(myPhoto);
-                        }
+                    public void done(ParseException e) {
+                        //send user to the group looker page.
                     }
                 });
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Network is currently unavailable")
+                        .setMessage("This group will be created and shared with the world automatically once network is connected!");
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        groupObject.saveEventually();
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, null);
+                builder.show();
+
+            }
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Can not create group").setMessage("Please make sure all of the information is filled out");
+            builder.setPositiveButton(android.R.string.ok, null);
+            builder.show();
+        }
+        myPhoto.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
             }
         });
-    }
+        }
+                /**
+                 * Checks to see if the group should be allowed to be created.
+                 * @return true if it should be, false otherwise.
+                 */
 
-    @OnClick(R.id.settingsPhoto)
-    public void choosePhoto(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        builder.setItems(R.array.camera_choices, mDialogInterface);
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
+    private boolean editValid() {
+        if (myName.getText().toString().isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Unable to Create Group").setMessage("Please give this group a name")
+                    .setPositiveButton(android.R.string.ok, null).show();
+            return false;
+        }
+        //maybe include more checks here in the future.
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        return true; //if no problem encountered.
     }
-
+    private String getGroupType() {
+        if (myPrivateCheck.isChecked()) {
+            return TheGroupUtil.GROUP_PRIVATE;
+        } else if (!myPrivateCheck.isChecked()) {
+            return TheGroupUtil.GROUP_PUBLIC;
+        }
+        //default
+        return TheGroupUtil.GROUP_PUBLIC;
+    }
     /**
-     * Set the profile image of this account
-     *
-     * @param theUri the uri for the photo
+     * Checks to see if the blog button is marked.
+     * @return true if it is.
      */
+    private boolean getBlogCheck() {
+        return myBlogCheck.isChecked();
+    }
+    /**
+     * Checks to see if the calendar button is checked.
+     * @return true if it is.
+     */
+    private boolean getCalendarCheck() {
+        return myCalendarCheck.isChecked();
+    }
     private void setImage(Uri theUri) {
         Log.d("ProfileFragment", "Here in setImage with uri: " + theUri);
         try {
@@ -157,17 +201,12 @@ public class SettingsActivity extends AppCompatActivity {
             Log.e("ProfileFragment", "Error: " + e);
         }
     }
-    //
-    // TODO
-    /**
-     *
-     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("ProfileFragment", "Here in onActivityResult with requestCode: " + requestCode + " , resultCode: " +
                 resultCode + " , data: " + data);
         super.onActivityResult(requestCode, resultCode, data);
-        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+    //    ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == this.RESULT_OK) {
             if (requestCode == CHOOSE_PHOTO_REQUEST) {
@@ -210,10 +249,6 @@ public class SettingsActivity extends AppCompatActivity {
                     Intent choosePhotoIntent = new Intent(Intent.ACTION_GET_CONTENT);
                     choosePhotoIntent.setType("image/*");
                     startActivityForResult(choosePhotoIntent, CHOOSE_PHOTO_REQUEST);
-                    break;
-                //TODO
-                case 2:
-                    face.setVisibility(View.VISIBLE);
                     break;
             }
         }
