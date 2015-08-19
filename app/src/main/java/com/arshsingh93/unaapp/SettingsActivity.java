@@ -69,8 +69,8 @@ public class SettingsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-        face.findViewById(R.id.login_button);
-        face.setVisibility(View.INVISIBLE);
+//        face.findViewById(R.id.login_button);
+//        face.setVisibility(View.INVISIBLE);
         myUsername.setText(ParseUser.getCurrentUser().getUsername());
 
 
